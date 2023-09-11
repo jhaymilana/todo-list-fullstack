@@ -1,0 +1,95 @@
+﻿@model MVC_Final_Project.Models.List
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>List: @Model.Name</h4>
+    <p>Number of Not Completed Items: @Model.Tasks.Count(item => item.Completion == Completion.Completed)</p>
+    <p>
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id">Delete List</a>
+    </p>
+</div>
+
+<h2>Todo Items</h2>
+
+<div>
+    <label>Show Completed Items:</label>
+    <input type="checkbox" id="showCompleted" />
+</div>
+
+<table class="table" id="notCompletedItems">
+    <thead>
+        <tr>
+            <th>Priority</th>
+            <th>Name</th>
+            <th>Date Created</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Tasks.Where(item => item.Completion == Completion.Completed).OrderByDescending(item => item.Priority).ThenByDescending(item => item.DateOfCreation))
+        {
+            <tr>
+                <td>@item.Priority</td>
+                <td>@item.Name</td>
+                <td>@item.DateOfCreation.ToString("MM/dd/yyyy HH:mm:ss")</td>
+                <td>@item.Description</td>
+                <td>
+                    <a asp-action="ToggleCompletion" asp-route-id="@item.Id">Toggle Completion</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<table class="table" id="completedItems" style="display: none;">
+    <thead>
+        <tr>
+            <th>Priority</th>
+            <th>Name</th>
+            <th>Date Created</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Tasks.Where(item => item.Completion == Completion.Completed).OrderByDescending(item => item.Priority).ThenByDescending(item => item.DateOfCreation))
+        {
+            <tr>
+                <td>@item.Priority</td>
+                <td>@item.Name</td>
+                <td>@item.DateOfCreation.ToString("MM/dd/yyyy HH:mm:ss")</td>
+                <td>@item.Description</td>
+                <td>
+                    <a asp-action="ToggleCompletion" asp-route-id="@item.Id">Toggle Completion</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#showCompleted').change(function () {
+                if (this.checked) {
+                    $('#completedItems').show();
+                } else {
+                    $('#completedItems').hide();
+                }
+            });
+        });
+    </script>
+}
+
+<p>
+    <a asp-action="AddTask" asp-route-listId="@Model.Id" class="btn btn-primary">Create New Task</a>
+</p>
